@@ -357,6 +357,10 @@ class _ShaderBuffersState extends State<ShaderBuffers>
   bool pauseListener = false;
   ValueNotifier<int> relayout = ValueNotifier(0);
   AnimationController? animationController;
+  int _targetFPS = 30; // Adjust as needed
+  Duration _lastFrameTime = Duration.zero;
+
+
 
   @override
   void initState() {
@@ -834,6 +838,17 @@ class _ShaderBuffersState extends State<ShaderBuffers>
 
   /// compute layer image at every ticks
   void tick(Duration elapsed) {
+    // Skip frames to achieve target FPS
+    final Duration now = Duration(milliseconds: iTime.elapsedMilliseconds);
+    final Duration frameTime = Duration(milliseconds: 1000 ~/ _targetFPS);
+    
+    if (now - _lastFrameTime < frameTime) {
+      // Skip this frame
+      return;
+    }
+    
+    _lastFrameTime = now;
+    
     iFrame++;
     if (context.mounted) setState(() {});
   }
